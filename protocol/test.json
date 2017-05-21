@@ -1,0 +1,27 @@
+{
+	"language": "go",
+	"package": "testproto",
+	"basetype": {
+		"type": {
+			"int": "int",
+			"string": "string",
+			"float": "float32"
+		},
+		"variable": [
+			"var <varaiblename> <variabletype>"
+		]
+	},
+	"struct": {
+		"definition": [
+			"struct <structname> {",
+			"<structbody>",
+			"}"
+		]
+	},
+	"callback": {
+		"definition": [
+			"type <callbackname> func(<params>)"
+		]
+	}
+
+}

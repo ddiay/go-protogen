@@ -1,0 +1,12 @@
+struct foo {
+	int num
+}
+
+struct foo1 {
+	int num
+	string name	
+}
+
+func SayHello(string msg)
+func Login(string name, string password)
+func LoginResult(int success) 
