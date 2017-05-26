@@ -7,6 +7,25 @@ struct foo1 {
 	string name	
 }
 
-func SayHello(string msg)
-func Login(string name, string password)
-func LoginResult(int success) 
+struct ServerInfo {
+	int id
+	string name
+	int status
+}
+
+proxy AccountServer {
+	Login(string name, string password)
+	Register(string name, string password)
+	GetServers()
+	EnterServer(int id)
+}
+
+proxy Player {
+	LoginResult(int result) 
+	RegisterResult(int result)
+	UpdateServers(ServerInfo[] servers)	
+	EnterServer(string name)
+}
+
+
+
