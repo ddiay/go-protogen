@@ -13,14 +13,14 @@ struct ServerInfo {
 	int status
 }
 
-proxy AccountServer {
+msg Player -> AccountServer {
 	Login(string name, string password)
 	Register(string name, string password)
 	GetServers()
 	EnterServer(int id)
 }
 
-proxy Player {
+msg AccountServer -> Player {
 	LoginResult(int result) 
 	RegisterResult(int result)
 	UpdateServers(ServerInfo[] servers)	

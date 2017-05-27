@@ -47,5 +47,10 @@ func main() {
 	fmt.Printf("template:\n%v\n", template)
 	fmt.Printf("def:\n%v\n", def)
 
+	err = SaveRpc(template, def, os.Args[3])
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
 	// GenRPCFiles(string(content))
 }

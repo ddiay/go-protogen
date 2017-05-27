@@ -7,6 +7,7 @@ import (
 )
 
 type TemplateType struct {
+	Declaration []string
 	Variable    []string
 	Field       []string
 	Param       []string
@@ -14,11 +15,18 @@ type TemplateType struct {
 	Deserialize []string
 }
 
+type TemplateMsg struct {
+	Head []string
+	Tail []string
+	Body []string
+}
+
 type Template struct {
 	Language string
 	Head     []string
 	Tail     []string
 	Typemap  map[string]TemplateType
+	Msgmap   map[string]TemplateMsg
 }
 
 func LoadTemplate(path string) (*Template, error) {

@@ -1,0 +1,1 @@
+go-protogen protocol/test.json protocol/test.def protocol/test.go

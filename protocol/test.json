@@ -1,7 +1,10 @@
 {
 	"language": "go",
 	"head": [
-		"import \"github.com/ddiay/go-gameserver/acctserver\""
+		"package test",
+		"",
+		"import \"github.com/ddiay/go-gameserver/acctserver\"",
+		""
 	],
 	"tail": [],
 	"typemap": {
@@ -22,8 +25,51 @@
 		"struct": {
 			"declaration": [
 				"type <TYPE> struct {",
-				"<FIELDS>",
+					"<FIELDS>",
+				"}",
+				"",
+				"func Marshal<TYPE>(self <TYPE>, data []byte) {",
+				"}",
+				"",
+				"func Unmarshal<TYPE>(self <TYPE>, data []byte) {",
+				"}",
+				""
+			],
+			"field": [ "<FIELD> <TYPE>" ],
+			"param": [ "<PARAM> <TYPE>" ],
+			"serialize": [ "Marshal<TYPE>(<VAR>, data []byte)" ],
+			"deserialize": [ "Unmarshal<Type>(<VAR>, data []byte)" ]
+		}
+	},
+	"msg": {
+		"from": {
+			"head": [ "" ],
+			"tail": [ "" ],
+			"body": [
+				"func <METHOD>(<TO>, <PARAMS>) {",
+					"data := make([]byte, 65535)",
+					"<SERIALIZE>",
+					"<TO>.Send(data)",
+				"}",
+				"",
+				"func Broadcast<METHOD>(<TOSET>, <PARAMS>) {",
+					"data := make([]byte, 65535)",
+					"<SERIALIZE>",
+					"for _, <TO> := range <TOSET> {",
+						"<TO>.Send(data)",
+					"}",
 				"}"
+			]
+		},
+		"to": {
+			"head": [ "" ],
+			"tail": [ "" ],
+			"body": [
+				"func Parse<METHOD>(<FROM>, data []byte) {",
+					"<DESERIALIZE>",
+					"On<METHOD>(<FROM>, <PARAMS>)",
+				"}",
+				""
 			]
 		}
 	}

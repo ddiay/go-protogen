@@ -21,8 +21,20 @@ type FuncDef struct {
 	params   []FieldDef
 }
 
+type MethodDef struct {
+	methodName string
+	params     []FieldDef
+}
+
+type MsgDef struct {
+	from    string
+	to      string
+	methods []MethodDef
+}
+
 type Def struct {
 	structDefs []StructDef
+	msgDefs    []MsgDef
 }
 
 func LoadStructs(text string) []StructDef {
@@ -46,7 +58,6 @@ func LoadStructs(text string) []StructDef {
 		}
 		structDefs = append(structDefs, structDef)
 	}
-	fmt.Printf("%v\n", structDefs)
 	return structDefs
 }
 
@@ -71,8 +82,35 @@ func LoadFuncs(text string) []FuncDef {
 		}
 		funcDefs = append(funcDefs, funcDef)
 	}
-	fmt.Printf("%v\n", funcDefs)
 	return funcDefs
+}
+
+func loadMethod(text string) []MethodDef {
+	var methodDefs []MethodDef
+
+	return methodDefs
+}
+
+func loadMsgs(text string) []MsgDef {
+	var msgDefs []MsgDef
+
+	reg := regexp.MustCompile(`msg[\s]+([\w]+)[\s]+->[\s]+([\w]+)\{((?s:.*?))\}`)
+	// regField := regexp.MustCompile(`[\s]+([\w]+)[\s]+([\w]+)`)
+
+	matches := reg.FindAllStringSubmatch(text, -1)
+	for _, match := range matches {
+		methodDefs := loadMethod(match[2])
+		msgDef := MsgDef{
+			from:    match[1],
+			to:      match[2],
+			methods: methodDefs,
+		}
+
+		msgDefs = append(msgDefs, msgDef)
+	}
+
+	fmt.Printf("msg:\n%q\n", matches)
+	return msgDefs
 }
 
 func LoadDef(path string) (*Def, error) {
@@ -84,5 +122,6 @@ func LoadDef(path string) (*Def, error) {
 
 	content := string(defData)
 	def.structDefs = LoadStructs(content)
+	def.msgDefs = loadMsgs(content)
 	return def, nil
 }
