@@ -1,62 +1,37 @@
-package protocol
+package test
 
-// 自定义数据类型定义段
+import "github.com/ddiay/go-gameserver/acctserver"
 
-//Foo Foo
-type Foo struct {
+type foo struct {
+	num int
+	
 }
 
-// 回调函数类型定义段
-
-//CallbackSayHello aaa
-type CallbackSayHello func(msg string)
-
-//回调函数定义段
-
-//OnSayHello aaa
-var OnSayHello CallbackSayHello
-
-//解包响应函数实现段
-
-//ParseSayHello aaa
-func ParseSayHello(data []byte) {
-	if OnSayHello == nil {
-		// error code
-		return
-	}
-	msg := string(data)
-	OnSayHello(msg)
+func Marshalfoo(self foo, data []byte) {
 }
 
-//代理函数实现段
-
-func SayHello(h interface{}, msg string) {
-	// data := []byte(msg)
+func Unmarshalfoo(self foo, data []byte) {
 }
 
-func BroadcastSayHello(hlist []interface{}, msg string) {
-
+type foo1 struct {
+	
+	name string
 }
 
-//消息映射段
-const (
-	MessageSayHello = 1000
-)
-
-type CallbackParsePacket func([]byte)
-
-var messageMap map[int]CallbackParsePacket
-
-func init() {
-	messageMap[MessageSayHello] = ParseSayHello
+func Marshalfoo1(self foo1, data []byte) {
 }
 
-//消息解析段
+func Unmarshalfoo1(self foo1, data []byte) {
+}
 
-func ParsePacket(data []byte) {
-	msgid := 0
-	_, ok := messageMap[msgid]
-	if !ok {
+type ServerInfo struct {
+	id int
+	name string
+	status int
+}
 
-	}
+func MarshalServerInfo(self ServerInfo, data []byte) {
+}
+
+func UnmarshalServerInfo(self ServerInfo, data []byte) {
 }
