@@ -6,21 +6,35 @@
 		"import \"github.com/ddiay/go-gameserver/acctserver\"",
 		""
 	],
-	"tail": [],
+	"tail": [	],
 	"typemap": {
 		"int": {
 			"variable": [ "var <VAR> int" ],
 			"field": [ "<FIELD> int" ],
-			"param": [ "<PARAM> int" ],
+			"param": [ "<FIELDNAME>" ],
 			"serialize": [ "binary.LittleEndian.PutUint32(data, uint32(<VAR>))" ],
 			"deserialize": [ "<VAR> := binary.LittleEndian.Uint32(data)" ]
 		},
 		"string": {
 			"variable": [ "var <VAR> string" ],
 			"field": [ "<FIELD> string" ],
-			"param": [ "<PARAM> string" ],
+			"param": [ "<FIELDNAME>" ],
 			"serialize": [ "binary.LittleEndian.PushString(data, <VAR>)" ],
 			"deserialize": [ "<VAR> := binary.LittleEndian.String(data)" ]
+		},
+		"map": {
+			"variable": [ "var <VAR> <TYPE>[<KEYTYPE>]<VALUETYPE>" ],
+			"field": [ "<FIELD> <TYPE>[<KEYTYPE>]<VALUETYPE>" ],
+			"param": [ "<FIELDNAME>" ],
+			"serialize": [ "" ],
+			"deserialize": [ "" ]
+		},
+		"list": {
+			"variable": [ "var <VAR> []<VALUETYPE>" ],
+			"field": [ "<FIELD> []<VALUETYPE>" ],
+			"param": [ "<FIELDNAME>" ],
+			"serialize": [ "" ],
+			"deserialize": [ "" ]
 		},
 		"struct": {
 			"declaration": [
@@ -36,38 +50,51 @@
 				""
 			],
 			"field": [ "<FIELD> <TYPE>" ],
-			"param": [ "<PARAM> <TYPE>" ],
+			"param": [ "<FIELDNAME>" ],
 			"serialize": [ "Marshal<TYPE>(<VAR>, data []byte)" ],
 			"deserialize": [ "Unmarshal<Type>(<VAR>, data []byte)" ]
 		}
 	},
-	"msg": {
+	"msgmap": {
 		"from": {
 			"head": [ "" ],
 			"tail": [ "" ],
 			"body": [
-				"func <METHOD>(<TO>, <PARAMS>) {",
-					"data := make([]byte, 65535)",
+				"func <METHOD>(to <TOTYPE>, <PARAMS>) {",
+					"\tdata := make([]byte, 65535)",
 					"<SERIALIZE>",
-					"<TO>.Send(data)",
+					"\tto.Send(data)",
 				"}",
 				"",
-				"func Broadcast<METHOD>(<TOSET>, <PARAMS>) {",
-					"data := make([]byte, 65535)",
+				"func Broadcast<METHOD>(toList []<TOTYPE>, <PARAMS>) {",
+					"\tdata := make([]byte, 65535)",
 					"<SERIALIZE>",
-					"for _, <TO> := range <TOSET> {",
-						"<TO>.Send(data)",
-					"}",
+					"\tfor _, to := range toList {",
+						"\t\tto.Send(data)",
+					"\t}",
 				"}"
 			]
 		},
 		"to": {
-			"head": [ "" ],
+			"head": [ 
+				"",
+				"type ParseCallback func(from <FROMTYPE>, data []byte)",
+				"var methods map[int]ParseCallback",
+				"func Parse(from <FROMTYPE>, data []byte) {",
+					"\tmsgid := binary.LittleEndian.Uint16(data)",
+					"\tm, ok := methods[int(msgid)]",
+					"\tif !ok {",
+						"\t\treturn",
+					"\t}",
+					"\tm(from, data[2:])",
+				"}",
+				""
+			 ],
 			"tail": [ "" ],
 			"body": [
-				"func Parse<METHOD>(<FROM>, data []byte) {",
-					"<DESERIALIZE>",
-					"On<METHOD>(<FROM>, <PARAMS>)",
+				"func Parse<METHOD>(from <FROMTYPE>, data []byte) {",
+					"\t<DESERIALIZE>",
+					"\tOn<METHOD>(from, <VARS>)",
 				"}",
 				""
 			]

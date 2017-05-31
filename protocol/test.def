@@ -1,11 +1,13 @@
 struct foo {
-	int num
+	int foonum
 	map[string]string keys
+	list[int] foonums
 }
 
 struct foo1 {
 	list[int] num
 	string name	
+	foo	f
 }
 
 struct ServerInfo {

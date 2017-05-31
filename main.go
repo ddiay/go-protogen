@@ -2,25 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 )
-
-func GenGo(structDefs []StructDef) {
-	var content string
-
-	// var line string
-	// for i, def := range structDefs {
-
-	// }
-
-	ioutil.WriteFile("rpc.go", []byte(content), 0644)
-}
-
-func GenRPCFiles(text string) {
-	structDefs := LoadStructs(text)
-	GenGo(structDefs)
-}
 
 type Config struct {
 	templateFilePath string

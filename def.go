@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	BaseType = 1
-	List     = 2
-	Map      = 3
-	Struct   = 4
+	BASETYPE = 1
+	LIST     = 2
+	MAP      = 3
+	STRUCT   = 4
 )
 
 type FieldDef struct {
@@ -17,7 +17,6 @@ type FieldDef struct {
 	fieldName string
 	keyType   string
 	valueType string
-	flag      int
 }
 
 type StructDef struct {
@@ -49,39 +48,27 @@ type Def struct {
 func loadFields(text string) []FieldDef {
 	var fieldDefs []FieldDef
 
-	regField := regexp.MustCompile(`[\s]+([\w]+)[\s]+([\w]+)`)
-	regList := regexp.MustCompile(`[\s]+(list\[([\w]+)\])[\s]+([\w]+)`)
-	regMap := regexp.MustCompile(`[\s]+(map\[([\w]+)\]([\w]+))[\s]+([\w]+)`)
+	// regBaseType := regexp.MustCompile(`[\s]+([\w]+)[\s]+([\w]+)`)
+	// regList := regexp.MustCompile(`[\s]+(list\[([\w]+)\])[\s]+([\w]+)`)
+	// regMap := regexp.MustCompile(`[\s]+(map\[([\w]+)\]([\w]+))[\s]+([\w]+)`)
+	reg := regexp.MustCompile(`[\s]*(((map)\[([\w]+)\]([\w]+))|((list)\[([\w]+)\])|([\w]+))[\s]+([\w]+)[,]*`)
 
-	matches := regField.FindAllStringSubmatch(text, -1)
+	matches := reg.FindAllStringSubmatch(text, -1)
 	for _, match := range matches {
 		fieldDef := FieldDef{
 			fieldType: match[1],
-			fieldName: match[2],
-			flag:      BaseType,
+			fieldName: match[10],
 		}
-		fieldDefs = append(fieldDefs, fieldDef)
-	}
 
-	matches = regList.FindAllStringSubmatch(text, -1)
-	for _, match := range matches {
-		fieldDef := FieldDef{
-			fieldType: match[1],
-			fieldName: match[3],
-			valueType: match[2],
-			flag:      List,
-		}
-		fieldDefs = append(fieldDefs, fieldDef)
-	}
-
-	matches = regMap.FindAllStringSubmatch(text, -1)
-	for _, match := range matches {
-		fieldDef := FieldDef{
-			fieldType: match[1],
-			fieldName: match[4],
-			keyType:   match[2],
-			valueType: match[3],
-			flag:      Map,
+		if match[3] == "map" {
+			fieldDef.fieldType = match[3]
+			fieldDef.keyType = match[4]
+			fieldDef.valueType = match[5]
+		} else if match[7] == "list" {
+			fieldDef.fieldType = match[7]
+			fieldDef.valueType = match[8]
+		} else {
+			fieldDef.fieldType = match[9]
 		}
 		fieldDefs = append(fieldDefs, fieldDef)
 	}
@@ -89,7 +76,7 @@ func loadFields(text string) []FieldDef {
 	return fieldDefs
 }
 
-func LoadStructs(text string) []StructDef {
+func loadStructs(text string) []StructDef {
 	var structDefs []StructDef
 	regStruct := regexp.MustCompile(`struct[\s]+([\w]+)[\s]+\{((?s:.*?))\}`)
 
@@ -105,7 +92,7 @@ func LoadStructs(text string) []StructDef {
 	return structDefs
 }
 
-func LoadFuncs(text string) []FuncDef {
+func loadFuncs(text string) []FuncDef {
 	var funcDefs []FuncDef
 
 	regFunc := regexp.MustCompile(`func[\s]+([\w]+)[\s]*\((.*?)\)`)
@@ -132,15 +119,38 @@ func LoadFuncs(text string) []FuncDef {
 func loadParams(text string) []FieldDef {
 	var fieldDefs []FieldDef
 
-	reg := regexp.MustCompile(`[\s]*([\w]+)[\s]+([\w]+)[,]*`)
+	regBaseType := regexp.MustCompile(`[\s]*([\w]+)[\s]+([\w]+)[,]*`)
+	regList := regexp.MustCompile(`[\s]*(list\[([\w]+)\])[\s]+([\w]+)[,]*`)
+	regMap := regexp.MustCompile(`[\s]*(map\[([\w]+)\]([\w]+))[\s]+([\w]+)[,]*`)
 
-	matches := reg.FindAllStringSubmatch(text, -1)
+	matches := regBaseType.FindAllStringSubmatch(text, -1)
 	for _, match := range matches {
 		fieldDef := FieldDef{
 			fieldType: match[1],
 			fieldName: match[2],
 		}
 
+		fieldDefs = append(fieldDefs, fieldDef)
+	}
+
+	matches = regList.FindAllStringSubmatch(text, -1)
+	for _, match := range matches {
+		fieldDef := FieldDef{
+			fieldType: match[1],
+			fieldName: match[3],
+			valueType: match[2],
+		}
+		fieldDefs = append(fieldDefs, fieldDef)
+	}
+
+	matches = regMap.FindAllStringSubmatch(text, -1)
+	for _, match := range matches {
+		fieldDef := FieldDef{
+			fieldType: match[1],
+			fieldName: match[4],
+			keyType:   match[2],
+			valueType: match[3],
+		}
 		fieldDefs = append(fieldDefs, fieldDef)
 	}
 
@@ -157,7 +167,7 @@ func loadMethod(text string) []MethodDef {
 	for _, match := range matches {
 		methodDef := MethodDef{
 			methodName: match[1],
-			params:     loadParams(match[2]),
+			params:     loadFields(match[2]),
 		}
 
 		methodDefs = append(methodDefs, methodDef)
@@ -196,7 +206,7 @@ func LoadDef(path string) (*Def, error) {
 	}
 
 	content := string(defData)
-	def.structDefs = LoadStructs(content)
+	def.structDefs = loadStructs(content)
 	def.msgDefs = loadMsgs(content)
 	return def, nil
 }
