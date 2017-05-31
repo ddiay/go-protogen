@@ -11,28 +11,28 @@
 		"int": {
 			"variable": [ "var <VAR> int" ],
 			"field": [ "<FIELD> int" ],
-			"param": [ "<FIELDNAME>" ],
+			"param": [ "<FIELD>" ],
 			"serialize": [ "binary.LittleEndian.PutUint32(data, uint32(<VAR>))" ],
 			"deserialize": [ "<VAR> := binary.LittleEndian.Uint32(data)" ]
 		},
 		"string": {
 			"variable": [ "var <VAR> string" ],
 			"field": [ "<FIELD> string" ],
-			"param": [ "<FIELDNAME>" ],
+			"param": [ "<FIELD>" ],
 			"serialize": [ "binary.LittleEndian.PushString(data, <VAR>)" ],
 			"deserialize": [ "<VAR> := binary.LittleEndian.String(data)" ]
 		},
 		"map": {
 			"variable": [ "var <VAR> <TYPE>[<KEYTYPE>]<VALUETYPE>" ],
 			"field": [ "<FIELD> <TYPE>[<KEYTYPE>]<VALUETYPE>" ],
-			"param": [ "<FIELDNAME>" ],
+			"param": [ "<FIELD>" ],
 			"serialize": [ "" ],
 			"deserialize": [ "" ]
 		},
 		"list": {
 			"variable": [ "var <VAR> []<VALUETYPE>" ],
 			"field": [ "<FIELD> []<VALUETYPE>" ],
-			"param": [ "<FIELDNAME>" ],
+			"param": [ "<FIELD>" ],
 			"serialize": [ "" ],
 			"deserialize": [ "" ]
 		},
@@ -50,7 +50,7 @@
 				""
 			],
 			"field": [ "<FIELD> <TYPE>" ],
-			"param": [ "<FIELDNAME>" ],
+			"param": [ "<FIELD>" ],
 			"serialize": [ "Marshal<TYPE>(<VAR>, data []byte)" ],
 			"deserialize": [ "Unmarshal<Type>(<VAR>, data []byte)" ]
 		}
@@ -94,7 +94,7 @@
 			"body": [
 				"func Parse<METHOD>(from <FROMTYPE>, data []byte) {",
 					"\t<DESERIALIZE>",
-					"\tOn<METHOD>(from, <VARS>)",
+					"\tOn<METHOD>(from<VARS>)",
 				"}",
 				""
 			]

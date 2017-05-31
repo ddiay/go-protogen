@@ -57,8 +57,8 @@ func genParams(tpl *Template, fields []FieldDef) string {
 		}
 
 		strBody := strings.Join(tplField.Field, "")
-		strParam = strings.Replace(strBody, "<FIELDNAME>", field.fieldName, -1)
-		strParam = strings.Replace(strParam, "<FIELDTYPE>", field.fieldType, -1)
+		strParam = strings.Replace(strBody, "<FIELD>", field.fieldName, -1)
+		strParam = strings.Replace(strParam, "<TYPE>", field.fieldType, -1)
 		strParam = strings.Replace(strParam, "<KEYTYPE>", field.keyType, -1)
 		strParam = strings.Replace(strParam, "<VALUETYPE>", field.valueType, -1)
 
@@ -82,8 +82,8 @@ func genVars(tpl *Template, fields []FieldDef) string {
 		}
 
 		strBody := strings.Join(tplField.Param, "")
-		strParam = strings.Replace(strBody, "<FIELDNAME>", field.fieldName, -1)
-		strParam = strings.Replace(strParam, "<FIELDTYPE>", field.fieldType, -1)
+		strParam = strings.Replace(strBody, "<FIELD>", field.fieldName, -1)
+		strParam = strings.Replace(strParam, "<TYPE>", field.fieldType, -1)
 		strParam = strings.Replace(strParam, "<KEYTYPE>", field.keyType, -1)
 		strParam = strings.Replace(strParam, "<VALUETYPE>", field.valueType, -1)
 		strParams = append(strParams, field.fieldName)
