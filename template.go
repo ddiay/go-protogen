@@ -7,12 +7,14 @@ import (
 )
 
 type TemplateType struct {
-	Declaration []string
-	Variable    []string
-	Field       []string
-	Param       []string
-	Serialize   []string
-	Deserialize []string
+	Declaration       []string
+	Variable          []string
+	Field             []string
+	Param             []string
+	Serialize         []string
+	Deserialize       []string
+	MemberSerialize   []string
+	MemberDeserialize []string
 }
 
 type TemplateMsg struct {

@@ -4,9 +4,37 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 	"strings"
 )
 
+func genFieldsNew(replaceFieldName string, tpl *Template, fields []FieldDef) string {
+	var strReplaced []string
+	for _, f := range fields {
+		tplType, ok := tpl.Typemap[f.fieldType]
+		if !ok {
+			tplType, ok = tpl.Typemap["struct"]
+			if !ok {
+				return ""
+			}
+		}
+
+		tplReflectValue := reflect.ValueOf(tplType)
+		replaceField := tplReflectValue.FieldByName(replaceFieldName)
+		strBlocks := replaceField.Interface().([]string)
+
+		strTemp := "\t" + strings.Join(strBlocks, "\n\t")
+
+		strTemp = strings.Replace(strTemp, "<TYPE>", f.fieldType, -1)
+		strTemp = strings.Replace(strTemp, "<FIELD>", f.fieldName, -1)
+		strTemp = strings.Replace(strTemp, "<KEYTYPE>", f.keyType, -1)
+		strTemp = strings.Replace(strTemp, "<VALUETYPE>", f.valueType, -1)
+		strReplaced = append(strReplaced, strTemp)
+	}
+
+	return strings.Join(strReplaced, "\n")
+
+}
 func genFields(templateStruct *TemplateType, template *Template, structDef *StructDef) string {
 	var strFields []string
 	for _, fieldDef := range structDef.fields {
@@ -27,16 +55,16 @@ func genFields(templateStruct *TemplateType, template *Template, structDef *Stru
 	return strings.Join(strFields, "\n")
 }
 
-func genStructs(templateStruct *TemplateType, template *Template, def *Def) string {
+func genStructs(templateStruct *TemplateType, tpl *Template, def *Def) string {
 	var strStructs []string
 	var strStruct string
 	for _, structDef := range def.structDefs {
 		strStruct = strings.Join(templateStruct.Declaration, "\n")
 
-		strFields := genFields(templateStruct, template, &structDef)
-
 		strStruct = strings.Replace(strStruct, "<TYPE>", structDef.structName, -1)
-		strStruct = strings.Replace(strStruct, "<FIELDS>", strFields, -1)
+		strStruct = strings.Replace(strStruct, "<FIELDS>", genFieldsNew("Field", tpl, structDef.fields), -1)
+		strStruct = strings.Replace(strStruct, "<MEMBERSERIALIZE>", genFieldsNew("MemberSerialize", tpl, structDef.fields), -1)
+		strStruct = strings.Replace(strStruct, "<MEMBERDESERIALIZE>", genFieldsNew("MemberDeserialize", tpl, structDef.fields), -1)
 		strStructs = append(strStructs, strStruct)
 	}
 
