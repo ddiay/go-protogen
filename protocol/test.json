@@ -12,15 +12,19 @@
 			"variable": [ "var <VAR> int" ],
 			"field": [ "<FIELD> int" ],
 			"param": [ "<FIELD>" ],
-			"serialize": [ "binary.LittleEndian.PutUint32(data, uint32(<VAR>))" ],
-			"deserialize": [ "<VAR> := binary.LittleEndian.Uint32(data)" ]
+			"serialize": [ "binary.LittleEndian.PutUint32(data, uint32(<FIELD>))" ],
+			"deserialize": [ "<FIELD> := binary.LittleEndian.Uint32(data)" ],
+			"memberserialize": [ "binary.Write(writer, binary.LittleEndian, &self.<FIELD>)" ],
+			"memberdeserialize": [ "binary.Read(reader, binary.LittleEndian, &self.<FIELD>)" ]
 		},
 		"string": {
 			"variable": [ "var <VAR> string" ],
 			"field": [ "<FIELD> string" ],
 			"param": [ "<FIELD>" ],
-			"serialize": [ "binary.LittleEndian.PushString(data, <VAR>)" ],
-			"deserialize": [ "<VAR> := binary.LittleEndian.String(data)" ]
+			"serialize": [ "binary.LittleEndian.PushString(data, <FIELD>)" ],
+			"deserialize": [ "<FILED> := binary.LittleEndian.String(data)" ],
+			"memberserialize": [ "binary.Write(writer, binary.LittleEndian, &self.<FIELD>)" ],
+			"memberdeserialize": [ "binary.Read(reader, binary.LittleEndian, &self.<FIELD>)" ]
 		},
 		"map": {
 			"variable": [ "var <VAR> <TYPE>[<KEYTYPE>]<VALUETYPE>" ],
@@ -43,16 +47,22 @@
 				"}",
 				"",
 				"func Marshal<TYPE>(self <TYPE>, data []byte) {",
+					"writer := binary.NewBuffer(data)",
+					"<MEMBERSERIALIZE>",
 				"}",
 				"",
 				"func Unmarshal<TYPE>(self <TYPE>, data []byte) {",
+					"reader := binary.NewBuffer(data)",
+					"<MEMBERDESERIALIZE>",
 				"}",
 				""
 			],
 			"field": [ "<FIELD> <TYPE>" ],
 			"param": [ "<FIELD>" ],
 			"serialize": [ "Marshal<TYPE>(<VAR>, data []byte)" ],
-			"deserialize": [ "Unmarshal<Type>(<VAR>, data []byte)" ]
+			"deserialize": [ "Unmarshal<Type>(<VAR>, data []byte)" ],
+			"memberserialize": [ "binary.Write(writer, binary.LittleEndian, &self.<FIELD>)" ],
+			"memberdeserialize": [ "binary.Read(reader, binary.LittleEndian, &self.<FIELD>" ]
 		}
 	},
 	"msgmap": {
