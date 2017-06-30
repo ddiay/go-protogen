@@ -85,7 +85,7 @@ func genParams(tpl *Template, fields []FieldDef) string {
 		}
 
 		strBody := strings.Join(tplField.Field, "")
-		strParam = strings.Replace(strBody, "<FIELD>", field.fieldName, -1)
+		strParam = ", " + strings.Replace(strBody, "<FIELD>", field.fieldName, -1)
 		strParam = strings.Replace(strParam, "<TYPE>", field.fieldType, -1)
 		strParam = strings.Replace(strParam, "<KEYTYPE>", field.keyType, -1)
 		strParam = strings.Replace(strParam, "<VALUETYPE>", field.valueType, -1)
@@ -93,31 +93,31 @@ func genParams(tpl *Template, fields []FieldDef) string {
 		strParams = append(strParams, strParam)
 	}
 
-	return strings.Join(strParams, ", ")
+	return strings.Join(strParams, "")
 }
 
 func genVars(tpl *Template, fields []FieldDef) string {
 	var strParams []string
-	var strParam string
+	// var strParam string
 
 	for _, field := range fields {
-		tplField, ok := tpl.Typemap[field.fieldType]
-		if !ok {
-			tplField, ok = tpl.Typemap["struct"]
-			if !ok {
-				break
-			}
-		}
+		// tplField, ok := tpl.Typemap[field.fieldType]
+		// if !ok {
+		// 	tplField, ok = tpl.Typemap["struct"]
+		// 	if !ok {
+		// 		break
+		// 	}
+		// }
 
-		strBody := strings.Join(tplField.Param, "")
-		strParam = strings.Replace(strBody, "<FIELD>", field.fieldName, -1)
-		strParam = strings.Replace(strParam, "<TYPE>", field.fieldType, -1)
-		strParam = strings.Replace(strParam, "<KEYTYPE>", field.keyType, -1)
-		strParam = strings.Replace(strParam, "<VALUETYPE>", field.valueType, -1)
-		strParams = append(strParams, field.fieldName)
+		// strBody := strings.Join(tplField.Param, "")
+		// strParam = ", " + strings.Replace(strBody, "<FIELD>", field.fieldName, -1)
+		// strParam = strings.Replace(strParam, "<TYPE>", field.fieldType, -1)
+		// strParam = strings.Replace(strParam, "<KEYTYPE>", field.keyType, -1)
+		// strParam = strings.Replace(strParam, "<VALUETYPE>", field.valueType, -1)
+		strParams = append(strParams, ", "+field.fieldName)
 	}
 
-	return strings.Join(strParams, ", ")
+	return strings.Join(strParams, "")
 }
 
 func genMethods(tpl *Template, tplMsg *TemplateMsg, msgDef *MsgDef) string {

@@ -27,7 +27,6 @@ msg AccountServer -> Player {
 	LoginResult(int result) 
 	RegisterResult(int result)
 	UpdateServers(list[ServerInfo] servers)	
-	EnterServer(string name)
 }
 
 

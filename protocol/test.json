@@ -1,9 +1,13 @@
 {
 	"language": "go",
 	"head": [
-		"package test",
+		"package protocol",
 		"",
-		"import \"github.com/ddiay/go-gameserver/acctserver\"",
+		"import (",
+		"\"github.com/ddiay/go-rpc-test/acctserver\"",
+		"\"encoding/binary\"",
+		"\"bytes\"",
+		")",
 		""
 	],
 	"tail": [	],
@@ -46,13 +50,13 @@
 					"<FIELDS>",
 				"}",
 				"",
-				"func Marshal<TYPE>(self <TYPE>, data []byte) {",
-					"writer := binary.NewBuffer(data)",
+				"func Marshal<TYPE>(self *<TYPE>, data []byte) {",
+					"\twriter := bytes.NewBuffer(data)",
 					"<MEMBERSERIALIZE>",
 				"}",
 				"",
-				"func Unmarshal<TYPE>(self <TYPE>, data []byte) {",
-					"reader := binary.NewBuffer(data)",
+				"func Unmarshal<TYPE>(self *<TYPE>, data []byte) {",
+					"\treader := bytes.NewBuffer(data)",
 					"<MEMBERDESERIALIZE>",
 				"}",
 				""
@@ -62,7 +66,7 @@
 			"serialize": [ "Marshal<TYPE>(<VAR>, data []byte)" ],
 			"deserialize": [ "Unmarshal<Type>(<VAR>, data []byte)" ],
 			"memberserialize": [ "binary.Write(writer, binary.LittleEndian, &self.<FIELD>)" ],
-			"memberdeserialize": [ "binary.Read(reader, binary.LittleEndian, &self.<FIELD>" ]
+			"memberdeserialize": [ "binary.Read(reader, binary.LittleEndian, &self.<FIELD>)" ]
 		}
 	},
 	"msgmap": {
@@ -70,13 +74,13 @@
 			"head": [ "" ],
 			"tail": [ "" ],
 			"body": [
-				"func <METHOD>(to <TOTYPE>, <PARAMS>) {",
+				"func <METHOD>(to acctserver.<TOTYPE><PARAMS>) {",
 					"\tdata := make([]byte, 65535)",
 					"<SERIALIZE>",
 					"\tto.Send(data)",
 				"}",
 				"",
-				"func Broadcast<METHOD>(toList []<TOTYPE>, <PARAMS>) {",
+				"func Broadcast<METHOD>(toList []acctserver.<TOTYPE><PARAMS>) {",
 					"\tdata := make([]byte, 65535)",
 					"<SERIALIZE>",
 					"\tfor _, to := range toList {",
@@ -88,7 +92,7 @@
 		"to": {
 			"head": [ 
 				"",
-				"type ParseCallback func(from <FROMTYPE>, data []byte)",
+				"type ParseCallback func(from acctserver.<FROMTYPE>, data []byte)",
 				"var methods map[int]ParseCallback",
 				"func Parse(from <FROMTYPE>, data []byte) {",
 					"\tmsgid := binary.LittleEndian.Uint16(data)",
@@ -102,7 +106,9 @@
 			 ],
 			"tail": [ "" ],
 			"body": [
-				"func Parse<METHOD>(from <FROMTYPE>, data []byte) {",
+				"type On<METHOD>Callback func(from acctserver.<FROMTYPE><PARAMS>)",
+				"var On<METHOD> On<METHOD>Callback",
+				"func Parse<METHOD>(from acctserver.<FROMTYPE>, data []byte) {",
 					"\t<DESERIALIZE>",
 					"\tOn<METHOD>(from<VARS>)",
 				"}",
